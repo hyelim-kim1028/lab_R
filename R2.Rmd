@@ -1,0 +1,469 @@
+---
+title: "R2"
+output: html_document
+---
+#IDE: 통합 개발 환경 (Integrated Development Environment) > EX. R stuido 
+# R: 통계처리에 특화된 프로그램 = 많은 데이터를 다루는데 편리하다 
+
+# check out and set the working directory 
+```{r}
+#현재 작업 디렉토리(폴더) 확인 
+getwd() # "C:/Users/mn040/OneDrive/문서"
+#현재 작업 디렉토리 변경 
+setwd("D:/lab_r_new")
+
+# note: after setwd(), I prefer to check getwd() once again at console to make sure 
+```
+
+
+
+#.csv$excel 파일 살펴보기 
+```{r}
+# csv_exam.csv 살펴보기 
+exam_csv <- read.csv("data/csv_exam.csv")
+
+# 데이터 프레임 내용 확인 
+exam_csv
+
+# 작업/통계처리가 가능한 데이터프레임으로 만들기 
+```
+
+
+# 컬럼별 합계/평균 계산 
+```{r}
+# 수학/영어 점수들의 합계 
+sum(exam_csv$math)
+sum(exam_csv$english)
+
+# 수학/영어 점수들의 평균 
+mean(exam_csv$math)
+mean(exam_csv$english)
+
+# 각 학생들의 수학/영어/과학 점수 합계 
+total <- exam_csv$math + exam_csv$english + exam_csv$science
+total 
+
+v1 <- c(10, 20, 30)
+v2 <- c(1,2,3)
+v1 + v2
+
+```
+
+
+#read.csv 의 옵션들 
+```{r}
+# read.csv(file, header = TRUE, sep = ",", quote = "\"",
+#         dec = ".", fill = TRUE, comment.char = "", ...)
+
+#헤더가 없는 csv파일에서 데이터 프레임 생성 
+
+exam_csv2 <- read.csv("data/exam_nohead.txt", 
+                      header =FALSE, 
+                      fileEncoding = "UTF-8-BOM")
+
+exam_csv2 
+
+```
+
+# Error head occured but I don't remember it 
+#첫째줄 이름이 변수이름이 되어버렸다 
+# 원래는 그냥 헤더 없이 해도 되기는 된다 observation 이 1개 없어짐 (헤더 대체)
+# 그런데, 내 코드는 헤더 안주면 안됨 그리고 첫번째 줄에 癤<bf> 이런 글자가 생성된다^^!! 하하 
+# fileEncoding = "UTF-8-BOM" 을 추가해줬더니 癤<bf>이 사라졌다...! 
+#BOM: Byte Order Mark 
+
+```{r}
+# csv_exam2는 separator이 ':'인 파일이다 
+exam_csv3 <- read.csv("data/csv_exam2.csv", 
+                      header = TRUE,
+                      sep = ":", 
+                      fileEncoding = "UTF-8-BOM")
+exam_csv3
+```
+
+# MS excel file (xls, xlsx)을 읽어서 데이터 프레임 생성 
+```{r}
+# readxl 패키지 설치 
+install.packages("readxl")
+# 패키지 코드는 설치 후 주석화 해준다 
+
+# install.packages error 
+# Error in install.packages : ERROR: failed to lock directory ‘C:\dev\R-3.6.1\library’ for modifying Try removing ‘C:\dev\R-3.6.1\library/00LOCK’
+
+# solution 1:
+# install.packages("Rcpp", dependencies = TRUE, INSTALL_opts = '--no-lock')
+
+# solution 2: 
+# Try removing ‘C:\dev\R-3.6.1\library/00LOCK’ -> 해당 파일을 지워줌 
+
+
+
+library(readxl)
+library(utils)
+
+# readxl::read_exel()
+
+
+```
+
+```{r}
+search()
+
+exam_xlsx <- read_excel("data/excel_exam.xlsx")
+
+exam_xlsx
+
+#Math Scores 
+exam_xlsx$math
+
+#엑셀 파일에서 첫번째 행이 컬럼(변수) 이름이 아닌 경우 
+# 해더 정보가 없는 경우 
+exam_xlsx_nohead <- read_excel("data/excel_exam_novar.xlsx", 
+                               col_names = FALSE)
+exam_xlsx_nohead
+
+#엑셀 파일에 컬럼 이름이 없는 경우 
+#직접 컬럼 이름을 만들어 줄 수도 있다 
+exam_xlsx_nohead <- read_excel("data/excel_exam_novar.xlsx", 
+                               col_names = c("id","cl","m","e","s"))
+exam_xlsx_nohead
+
+
+#엑셀 파일에서 특정 sheet 에 있는 데이터를 읽는 경우 #특정 sheet 에 있는 경우 
+exam_xlsx_sheet <- read_excel("data/excel_exam_sheet.xlsx",
+                              sheet = 3)
+exam_xlsx_sheet
+
+#FALSE 와 F & TRUE 와 T are used interchangeably in R 
+```
+
+
+#rm(), read.csv, View(), head()
+```{r}
+# Global Env (메모리)에 있는 변수들 삭제 
+rm(list = ls())
+
+exam <- read.csv("data/csv_exam.csv")
+
+```
+
+
+
+#csv 파일을 읽어서 데이터 프레임 생성 
+exam <- read.csv("data/csv_exam.csv")
+
+#data frame에 모든 데이터들을 출력 
+exam
+#Viewer창에 데이터들을 출력 
+View(exam)
+#앞에만 대문자!!!!!!!!!! 
+
+#큰 데이터일 경우, 적어도 앞에 몇개를 출력해봐야 데이터 프레임의 structure 파악 가능 
+#앞쪽 혹은 뒷쪽에 있는 데이터 몇개만 출력하는 방법이 있다 
+
+#데이터 프레임의 처음 몇개의(일부) 데이터만 출력
+head(exam)
+#20개 중 6개만 출력되고, id 가 1:6 까지 출력 = 첫 6개 출력 
+head(exam,n=3)
+#n 의 기본값 = 6 이라서, 처음엔 6개가 출력되었고, 나중에 n을 설정해 주었을 때 n만큼 나왔다 
+
+#데이터 프레임에서 마지막에 나오는 일부 데이터만 출력 
+tail(exam)
+# 15:20 마지막 6개가 출력 
+
+#dim: data frame 의 차원(dimension): 행과 열의 갯수/ 관측치와 변수의 갯수 (number of observations and variables)
+dim(exam)
+exam
+
+#백터 리턴 (vector return) (20,5)
+dimension <- dim(exam)
+dimension
+dimension[1] #number of rows in a data frame  
+dimension[2] #number of columns in a data frame 
+# are equl to 
+dim(exam)[1]
+dim(exam)[2]
+
+# Structure of data frame 
+str(exam)
+
+#'data.frame':	20 obs. of  5 variables:
+#  $ id     : int  1 2 3 4 5 6 7 8 9 10 ...
+# $ class  : int  1 1 1 1 2 2 2 2 3 3 ...
+# $ math   : int  50 60 45 30 25 50 80 90 20 50 ...
+# $ english: int  98 97 86 98 80 89 90 78 98 98 ...
+# $ science: int  50 60 78 58 65 98 45 25 15 45 ...
+
+#Dataframe$변수or column 이름!
+#shows the structure of the data frame 
+# $name of the variable/column : data type  shows first few datas (head)
+#str is good when you need to know the structure of a data frame en una mirada 
+
+exam$math
+
+#요약 통계(기술 통계량/ descriptive statistics) 출력 
+summary(exam)
+
+# mean = average,  median = 중앙값 (the "middle" value in the list of numbers) 
+# qu = quartile, 1st qu > 1st quartile (1사분위 값/25%), 3rd qu > 3rd quartile (3사분위 값/75%)
+# The difference btween min & max is large for math and science, 
+# however, the difference is (relatively) small for English 
+
+#medin 값에 왜 86.5, 62,5 > 0.5로 끝날까?  
+# there 20 studnets, so there is no student who is in the exact middle of the list.
+# what they do is they get the two students in the middle (#10 & 11) and get the average of their scores 
+
+#ggplot2 package has a data frame called mpg 
+#as.data.frame(variable): 변수가 데이터 프레임이면, 데이터 프레임반환 
+# 변수가 데이터 프레임이 아니고 데이터 프레임으로 변환가능하면 데이터 프레임을 생성해서 리턴해준다 
+mpg <- as.data.frame(dimension)
+#dimension 은 변수가 아니다 (it's under values category), 하지만 as.data.frame 에 넣어주면서 데이터 프레임으로 바꿔준다 
+
+mpg
+
+mpg <- as.data.frame(ggplot2::mpg)
+#mpg를 타이핑 할 때 > 앞에 테이블 아이콘이 뜨는데 se significa que es un data frame 
+#mpg data frame 의 차원(행/열 갯수)
+
+mpg
+
+dim(mpg)
+
+#structure of the data frame 'mpg' 
+mpg
+str(mpg)
+
+#int = 정수(decimal digits not included), num = 실수 (decimal numbers included)
+
+# mpg 데이터 프레임에서 데이터 일부분만 출력 
+head(mpg)
+tail(mpg)
+
+#mpg > mile per gallon 
+
+#기술통계량 
+summary(mpg)
+#숫자들에게만 의미가 있고, 문자열에는 의미가 없다 
+
+#예쁘게 만들어져있는 테이블도 있지만, 그렇지 않은 테이블들도 있다 
+# 데이터에대한 설명서를 또 다운받아서 본다 > 그리고 변수 이름들을 알아보기 쉽게 변경, 삭제 혹은 추가가 가능 
+# 이런건들을 데이터 조작이라고 부른다 > 값 자체를 바꾸는게 아니라, 좀 더 다루기 쉽게 바꾸는 것 (나쁜 조작 ㄴㄴ)
+
+#데이터 가공(조작)을 위한 패키지 설치 
+install.packages("dplyr")
+
+#설치한 패키지를 검색 경로(메모리)에 로드 
+library(dplyr)
+
+# detach: 패키지 검색 경로에서 빼버리는 것 
+# 다음의 패키지를 부착(-> attach)합니다: ‘dplyr’
+
+#검색 경로에 로딩된 패키지 확인 
+search()
+
+# 가장 최근에 추가된 패키지 - 가장 최초에 추가된 패키지 순으로 정리되어 있음 
+# packages:stats 도 예제 데이터, 함수들을 갖고 있음 (각각의 패키지는 갖고 있다)
+
+# The following objects are masked from ‘package:stats’:
+# filter, lag
+
+# stat package has two functions named filter and lag, but the dplyr package also has it. 
+# So the filter and lag functions had been masked 
+# the latest downloaded ones 덮어써버리다 the earlier ones 
+# now, we can no longer use th filter and lag functions from the stat package) 
+# > 앞에 명시해주면 댐 
+
+#변수 이름 바꾸기: rename 함수 
+df <- data.frame(v1 = c(1,2,3),
+                 v2 = c(11,22,33))
+
+df
+
+#변수의 이름들을 의미가 있는 이름을 바꿔서 
+#나중에 데이터 분석을 할 때 편리하게 함. 
+
+
+# rename(데이터프레임 이름, 바꿀 변수 이름을 파라미터로  = 원래 변수 이름)
+rename(df,id=v1,score=v2)
+
+df
+# 그래도 df 그래도 남아있다 
+
+#deplyr::rename() 함수는  변수 이름들을 바꾼 새로운 데이터 프레임을 생성해서 반환 (리턴)
+# 원본 데이터 프레임을 변경하는 것 아님! 
+rename(df, id=v1, score=v2)
+
+df #rename() 호출 후에도 df는 원본 그대로 유지됨
+#deplyr 의 모든 함수들이 그러함 > 원본 데이터를 바꾸지 않음, 그대로 유지 > 변경한 복사본, 새로운 데이터 프레임을 반환해서 리턴함 
+# 원본 데이터는 그대로 유지 
+# 원본 데이터 프레임을 변경하고 싶을 때에는 
+
+df <- rename(df, id = v1, score = v2)
+#호출한 결과를 변수에 저장 (바꿔서 넣어버리는 것과 동일) 
+# 이래야 원본 데이터는 지워지고, 바뀌어서 저장 
+
+df
+
+#deplyr 를 만든 사람의 의도: 데이터/ 빅데이터의 경우 한번 다운 받기 굉장히 힘들다 > 잘못 바꿨다가, 복원 불가 
+# 그래서 원본은 그래도 유지되고 복사본만 바뀌도록 설정되어 있음 
+
+#새로운 변수(컬럼) 추가 
+# 데이터프레임$추가할변수 <- 백터(값) 
+df_score <- data.frame(id = c(1,2,3),
+                       math = c(90,80,100),
+                       kor = c(70,80,90))
+df_score 
+
+#총점 변수(컬럼)을 추가
+df_score$total <- df_score$math + df_score$kor
+
+df_score
+
+#df 변화 
+
+#mpg data frame 에서 
+# 시내 주행 연비(cty)와 고속도로 주행 연비(hwy)의 평균을 계산해서 mpg에다 avg_mpg 변수를 추가해보세요 
+
+# my_guess
+str(mpg)
+
+avg(mpg$cty + mpg$hwy)
+
+mpg$avg_mpg <- avg(mpg$cty + mpg$hwy)
+
+
+#teacher's solution 
+
+mpg$avg_mpg <- (mpg$cty + mpg$hwy)/2
+head(mpg)
+tail(mpg)
+
+#새로 작성된 평균 연비 변수(컬럼)의 기술 통계량 
+summary(mpg$avg_mpg)
+
+#등급을 주자 (연비: cty & hwy를 사용해서)
+# 조건 함수 (ifelse)이용
+#위에서 계산된 평균 연비(avg_mpg)의 값이 
+# 30 이상이면 1 등급, 20 이상 30 미만이면 2등급,20 미만이면 3등급
+
+mpg$grade <- ifelse(mpg$avg_mpg >= 30, 1,2)
+##                  평균 연비가 30 이상이면, 1등급, 아니면 2등급, 
+
+mpg$grade <- ifelse(mpg$avg_mpg >= 30, 1,
+                    ifelse(mpg$avg_mpg >= 20, 2,3))
+head(mpg)
+tail(mpg)
+
+#1,2,3 등급 차량들의 갯수 
+hist(mpg$grade)
+
+# hist = histogram 
+# 그래프 등을 만들기 위해 데이터 가공 (만들고, 쪼개고 등) 
+
+
+#ifelse(conditional sentence, 
+#        the value to be returned when the condition is TRUE, 
+#        the value to be returned when the condition is FALSE) 
+
+#ifesle(조건식,
+#        조건식이 참일 때 반환할 값,
+#       조건식이 거짓일 때 반환할 값)
+
+x <- 5 
+result <- ifelse(x > 0, "positive","negative")
+result
+
+# 0 보다 크지 않은 경우 (0 포함) , 그럴때에  ifelse 를 준다 
+result2 <- ifelse(x>0,"positive", 
+                  ifelse(x == 0, "zero", "negative"))
+result2
+
+#ifelse() 함수는 스칼라와 백터 모두 적용 가능 
+df <- data.frame(id = c(1,2,3,4,5),
+                 score = c(100,95,88,73,61))
+df
+
+df$grade1 <- ifelse(df$score >= 80, "Pass", "Fail")
+df
+
+#R은 대부분 반복의 기능을 갖고 있다 
+#다른 언어에는 이런 기능을 만드려면 for 문을 사용해서 만들어야한다 
+
+df$grade2 <- ifelse(df$score >= 90, "A",
+                    ifelse(df$score >= 80, "B", 
+                          ifelse(df$score >= 70, "C",
+                                 ifelse(df$score >= 60, "D","F"))))
+df
+
+#도수 분포표 / frequency table(도수분포표)
+table(mpg$grade)
+hist(mpg$grade)
+
+table(df$grade2)
+table(df$grade1)
+qplot(df$grade2)
+#not working/ qplot belongs to ggplot2 
+
+library(ggplot2)
+library(dplyr)
+search()
+
+
+
+midwest <- as.data.frame(ggplot2::midwest)
+midwest
+
+str(midwest)
+
+
+
+# Question2: poptotal 을 total 로, popasian을 asian 으로 변수명을 수정하세요 
+
+midwest <- rename(midwest,total=poptotal,asian=popasian)
+midwest
+
+#Question3: total, asian 변수를 이용해 '전체 인구 대비 아시아 인구 백분율' 파생변수를 만들고, 
+#           히스토그램을 만들어 도시들이 어떻게 분포하는지 살펴보세요 
+
+#백분율: 비율에 100을 곱한 값 (asian/total)*0.01/ 전체의 1/100을 단위로 하여 나타낸 비율. 백분비. 퍼센티지.
+
+
+
+midwest$percentage <- (midwest$asian/midwest$total)*100
+
+
+midwest
+
+hist(midwest$percentage)
+
+m_percentage <-midwest$percentage
+
+
+#Question4. 아시아 인구 백분율 전체 평균을 구하고, 평균을 초과하면 "large", 
+#           그 외에는 "small"을 부여하는 파생변수를 만들어 보세요 
+
+
+mean_percentage <- mean(m_percentage)
+mean_percentage
+
+midwest$category <- ifelse(m_percentage > mean_percentage,"large" ,"small")
+
+
+midwest
+
+
+#Question5. "large" 와 "small"에 해당하는 지역이 얼마나 되는지, 빈도표와 빈도 막대 그래프를 만들어 확인해 보세요 
+table(midwest$category)
+qplot(midwest$category)
+
+
+
+
+
+
+
+
+
+
+
+
